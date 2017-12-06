@@ -1,0 +1,64 @@
+# --------------------------------------------------------------
+# QGSP was the "default" physics use-case for High Energy Physics
+# --------------------------------------------------------------
+physics QGSP
+
+trackcuts keep=proton,neutron 
+
+# ------------------------------------------------------------
+# Defining the beam. Slashes indicate you're not done and will 
+#	move to the next line. You could just as easily have
+#	all of the commands on the same line.
+# ------------------------------------------------------------
+# Explanation:
+#						beam gaussian =			Gaussian-shaped beam (bell curve)	
+#						particle = 				The type of particle (proton in this case)
+#						nEvents = 				Number of particles (events)
+#						beamZ = 				Starting beam location
+#						sigmaX = 				Spread of particle positions
+#						sigmaXp = 				Spread of particle angles (momenta)
+#						meanMomentum, sigmaP = 	Average and spread of the total momentum
+#						meanT, sigmaT = 		Average and spread of the time-of-flight
+# ------------------------------------------------------------
+beam gaussian particle=proton nEvents=100 beamZ=0.0 \
+	sigmaX=10.0 sigmaY=10.0 sigmaXp=0.100 sigmaYp=0.100 \
+	meanMomentum=20000.0 sigmaP=4.0 meanT=0.0 sigmaT=0.0
+#beam ascii file=input.txt format=for009.dat
+
+	
+# ----------------------------------------------------------	
+# The reference particle. This makes the math easier for the 
+#	computer, but doesn't really matter that much.
+# ----------------------------------------------------------
+reference particle=proton referenceMomentum=20000
+
+
+
+# ---------------------------------------------------------------
+# BeamVis just shows where the beam starts. During visualization, 
+#	it's a little red rectangle.
+# ---------------------------------------------------------------
+box BeamVis width=100.0 height=100.0 length=10.0 material=Vacuum color=1,0,0
+place BeamVis z=0
+
+
+
+#-----------------------------------------
+# Define and place the element. 
+#-----------------------------------------
+param L=500
+param mat=Al
+
+
+absorber myAbsorber absWindow=abs360 insideLength=$L absMaterial=$mat color=0,0,1
+
+place myAbsorber z=500.0
+
+virtualdetector myDet radius=1000.0 length=10.0 color=0,1,0 file=$mat.out.txt format=for009.dat
+place myDet z=760.0
+
+
+# -----------------------
+# Label the visualization
+# -----------------------
+label text="$mat.g4bl" 1200,0,-500
